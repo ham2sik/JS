@@ -1,30 +1,72 @@
+/* 
+* 모바일개발팀 UI기술파트 전용(JK 현대화) - 담당자 : 함이식 대리(사용 시 담당자 문의 후 사용)
+* File Name : /content/js/jk_uit.js
+* Final Editor : 함이식 
+* History : [2016-08-11 1차완료], [2016-08-19~ 2차]
+*/
+
 (function($){
 	$.fn.extend({
-		checkbox: function(options) {// plugin name
+		byteCheck: function(options) {// plugin name
 			var defaults={//Settings list and the default values
-					type : 'default', // +span
-					spanClass : 'tplBtn',
+					spanClass : 'byte',
+					max : 150
+				},
+				options=$.extend(defaults, options);
+			function stringByteLength(s,b,i,c) {
+				for(b=i=0;c=s.charCodeAt(i++);b+=c>>11?3:c>>7?2:1);
+				return b;
+			}
+			return this.each(function() {
+				var o=options,
+					$this=$(this),
+					$textarea=$this.find('textarea'),
+					$byteTxt=$this.find('.'+o.spanClass+' strong'),
+					maxValue=o.max,
+					string,
+					stringLength,
+					overLength;
+				$textarea.on('keyup',function() {
+					string=$textarea.val();
+					stringLength=stringByteLength(string);
+					if (stringLength > maxValue) {
+						overLength=string.length;
+						while (stringLength > maxValue) {
+							string=string.substr(0, overLength--);
+							stringLength=stringByteLength(string);
+						}
+						$textarea.val(string);
+						$byteTxt.text(stringLength);
+						alert(maxValue+"byte를 초과하였습니다.");
+					} else {
+						$byteTxt.text(stringLength);
+					}
+				});
+			});
+		},
+		checkbox: function(options) {
+			var defaults={
+					imgClass : 'tplBtn',
 					onClass : 'chk'
 				},
-				options = $.extend(defaults, options);
+				options=$.extend(defaults, options);
 			return this.each(function() {
 				var o=options,
 					$this=$(this),
 					$input=$this.find('input[type="checkbox"]'),
-					$label=$this.find('label'),
-					$span=$this.find('.'+o.spanClass),
+					$img=$this.find('.'+o.imgClass),
 					onClassName=o.onClass;
-				if (o.type!='span') {
+				if ($img.prop('tagName').toLowerCase()!='span') {
 					$input.on('click', function(e) {
-						$label.toggleClass(onClassName);
+						$img.toggleClass(onClassName);
 					});
 				} else {
 					$this.on('click', function(e) {
-						if ($span.hasClass(onClassName)) {
-							$span.removeClass(onClassName);
+						if ($img.hasClass(onClassName)) {
+							$img.removeClass(onClassName);
 							$input.prop('checked',false);
 						} else {
-							$span.addClass(onClassName);
+							$img.addClass(onClassName);
 							$input.prop('checked',true);
 						}
 					});
@@ -37,7 +79,7 @@
 					offClass : 'tplBtnFavOff',
 					onClass : 'tplBtnFavOn'
 				},
-				options = $.extend(defaults, options);
+				options=$.extend(defaults, options);
 			return this.each(function() {
 				var o=options,
 					$this=$(this),
@@ -66,12 +108,11 @@
 					top : 0,
 					left : 0
 				},
-				options = $.extend(defaults, options);
+				options=$.extend(defaults, options);
 			return this.each(function() {
 				var o=options,
 					$this=$(this),
 					specs;
-
 				if (o.type=="center") {
 					o.left=(screen.availWidth-o.width)/2;
 					o.top=(screen.availHeight-o.height)/2;
@@ -85,7 +126,6 @@
 					o.top=0;
 				}
 				specs='width='+o.width+' ,height='+o.height+', top='+o.top+', left='+o.left;
-
 				$this.on('click', function(e) {
 					window.open(o.url, o.name, specs);
 					e.stopPropagation();
@@ -113,21 +153,27 @@
 			var defaults={
 					txtClass : 'ph'
 				},
-				options = $.extend(defaults, options);
+				options=$.extend(defaults, options);
 			return this.each(function() {
-				var $this=$(this),
-					$input=$this.find('input[type="text"]'),
-					$txtClass=$this.find('.'+options.txtClass);
-				$input.on('focus', function(e) {
+				var o=options,
+					$this=$(this),
+					$txtClass=$this.find('.'+o.txtClass),
+					$type;
+				if ($this.find('input[type="text"]').length) {
+					$type=$this.find('input[type="text"]');
+				} else if ($this.find('textarea').length) {
+					$type=$this.find('textarea');
+				}
+				$type.on('focus', function(e) {
 					$txtClass.hide();
 				});
-				$input.on('blur', function(e) {
-					if ($input.val()=='') {
+				$type.on('blur', function(e) {
+					if ($type.val()=='') {
 						$txtClass.show();
 					}
 				});
 				$txtClass.on('click', function(e) {
-					$input.focus();
+					$type.focus();
 				});
 			});
 		},
@@ -137,7 +183,7 @@
 					resultClass : 'lySchResult',
 					closeClass : 'tplLyBtnClose_1'
 				},
-				options = $.extend(defaults, options);
+				options=$.extend(defaults, options);
 			return this.each(function() {
 				var o=options,
 					$this=$(this),
@@ -152,10 +198,25 @@
 		},
 		select: function(options) {
 			return this.each(function() {
-				var $this=$(this),
-					$select=$this.find('select');
+				var $select=$(this).find('select');
+				$select.children('option:selected').attr('data-selected',1);
 				$select.on('change', function(){
-					$select.siblings('label').text($select.children('option:selected').text());
+					var $this=$(this),
+						$label=$this.siblings('label'),
+						$selected=$this.children('option:selected');
+					$label.text($selected.text());
+					if ($selected.attr('data-selected')!=1) {
+						$label.addClass('chk');
+					} else {
+						$label.removeClass('chk');
+					}
+				});
+			});
+		},
+		selfClose: function() {
+			return this.each(function() {
+				$(this).on('click', function(){
+					self.close();
 				});
 			});
 		},
@@ -164,16 +225,17 @@
 					tabMenu : 'tplTabBx',
 					tabCont : 'tplTabCnt'
 				},
-				options = $.extend(defaults, options);
+				options=$.extend(defaults, options);
 			return this.each(function() {
 				var	o=options,
 					$this=$(this),
-					$tabButton=$this.find('.'+o.tabMenu).find('button'),
+					$tabMenu=$this.find('.'+o.tabMenu),
+					$tabButton=$tabMenu.find('button'),
 					$tabCont=$this.find('.'+o.tabCont).find('.tabCnt');
 				$tabButton.on('click', function(e) {
 					var index=$tabButton.index($(this));
 					if (!$(this).parent().hasClass('on')) {
-						$this.find('.on').removeClass('on');
+						$tabMenu.find('.on').removeClass('on');
 						$tabCont.hide();
 						$(this).parent().addClass('on');
 						$tabCont.eq(index).show();
@@ -186,13 +248,12 @@
 					tabBtn : 'devTplTabBtn',
 					tabCont : 'tabCnt'
 				},
-				options = $.extend(defaults, options);
+				options=$.extend(defaults, options);
 			return this.each(function() {
 				var	o=options,
 					$this=$(this),
 					$tabButton=$(this).find('.'+o.tabBtn),
 					$tabCont=$this.find('.'+o.tabCont);
-
 				$tabButton.on('click', function(e) {
 					var index=$tabButton.index($(this));
 					if (!$(this).parent().hasClass('on')) {
@@ -204,36 +265,54 @@
 				});
 			});	
 		},
+		tableHeight: function(options) {
+			return this.each(function() {
+				var $this=$(this);
+				$this.css('height', $this.parents('td').height());
+			});
+		},
 		tooltipBox: function(options) {
 			var defaults={
-					type : 'click', // +hover
+					type : 'click', // +click_2, hover, hover_2
 					lyBtn : 'devTplLyBtn',
-					layer : 'tplLyType',
-					btnClose : 'tplLyBtnClose'
+					layer : 'devLyType',
+					btnClose : 'devLyBtnClose'
 				},
-				options = $.extend(defaults, options);
+				options=$.extend(defaults, options);
 			return this.each(function() {
 				var o=options,
 					$this=$(this),
 					$lyBtn=$this.find('.'+o.lyBtn),
 					$layer=$this.find('.'+o.layer);
 				//console.log($layer);
-
-				if (o.type=='click') {
-					$lyBtn.on('click', function(e) {
-						if ($layer.is(':visible')) {
-							$layer.hide();
-						} else {
+				switch(o.type) {
+					case 'click':
+						$lyBtn.on('click', function(e) {
+							if ($layer.is(':visible')) {
+								$layer.hide();
+							} else {
+								$layer.show();
+							}
+						});
+						break;
+					case 'click_2':
+						$lyBtn.on('click', function(e) {
 							$layer.show();
-						}
-					});
-				} else if (o.type=='hover') {
-					$lyBtn.on('mouseenter', function(e) {
-						$layer.show();
-					});
-					$lyBtn.on('mouseleave', function(e) {
-						$layer.hide();
-					});
+						});
+						break;
+					case 'hover':
+						$lyBtn.on('mouseenter', function(e) {
+							$layer.show();
+						});
+						$lyBtn.on('mouseleave', function(e) {
+							$layer.hide();
+						});
+						break;
+					case 'hover_2':
+						$lyBtn.on('mouseenter', function(e) {
+							$layer.show();
+						});
+						break;
 				}
 				$layer.find('.'+o.btnClose).on('click', function(e) {
 					$layer.hide();
@@ -242,3 +321,74 @@
 		}
 	});
 })(jQuery);
+
+/* range fn */
+var range = function(start, end, step) {
+	var range = [];
+	var typeofStart = typeof start;
+	var typeofEnd = typeof end;
+
+	if (step === 0) {
+		throw TypeError("Step cannot be zero.");
+	}
+
+	if (typeofStart == "undefined" || typeofEnd == "undefined") {
+		throw TypeError("Must pass start and end arguments.");
+	} else if (typeofStart != typeofEnd) {
+		throw TypeError("Start and end arguments must be of same type.");
+	}
+
+	typeof step == "undefined" && (step = 1);
+
+	if (end < start) {
+		step = -step;
+	}
+
+	if (typeofStart == "number") {
+
+		while (step > 0 ? end >= start : end <= start) {
+			range.push(start);
+			start += step;
+		}
+
+	} else if (typeofStart == "string") {
+
+		if (start.length != 1 || end.length != 1) {
+			throw TypeError("Only strings with one character are supported.");
+		}
+
+		start = start.charCodeAt(0);
+		end = end.charCodeAt(0);
+
+		while (step > 0 ? end >= start : end <= start) {
+			range.push(String.fromCharCode(start));
+			start += step;
+		}
+
+	} else {
+		throw TypeError("Only string and number types are supported");
+	}
+
+	return range;
+
+}
+
+/* common fn */
+$(function(){
+	/* Form */
+	$('.devTplChkBx').checkbox();
+	$('.devTplSltBx').select();
+	$('.devTplSchPh').placeholder();
+
+	/* tab */
+	$('.devTplTabBx').tab_1();
+
+	/* table div height */
+	$('.tplTbWrap').tableHeight();
+
+	/* layer */
+	$('.devTplLyClick').tooltipBox();
+	$('.devTplLyHover').tooltipBox({type : 'hover'});
+	$('.devTplLyHover_1').tooltipBox({type : 'hover_2'});
+	$('.devTplLyClick_1').tooltipBox({type : 'click_2'});
+});
