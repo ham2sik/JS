@@ -51,17 +51,28 @@
 					onClassName=o.onClass;
 				if ($img.prop('tagName').toLowerCase()!='span') {
 					$input.on('click', function(e) {
+						var checkedValue=$input.prop('checked'),
+							inputValue=$input.val(),
+							inputName=$input.attr('name');
 						$img.toggleClass(onClassName);
+						$this.trigger('jk.change',{'name':inputName,'checked':checkedValue,'value':inputValue});
+						e.stopPropagation();
 					});
 				} else {
 					$this.on('click', function(e) {
+						var checkedValue,
+							inputValue=$input.val(),
+							inputName=$input.attr('name');
 						if ($img.hasClass(onClassName)) {
 							$img.removeClass(onClassName);
-							$input.prop('checked',false);
+							checkedValue=false;
 						} else {
 							$img.addClass(onClassName);
-							$input.prop('checked',true);
+							checkedValue=true;
 						}
+						$input.prop('checked',checkedValue);
+						$this.trigger('jk.change',{'name':inputName, 'checked':checkedValue,'value':inputValue});
+						e.stopPropagation();
 					});
 				}
 			});
@@ -192,17 +203,17 @@
 		select: function(options) {
 			return this.each(function() {
 				var $select=$(this).find('select');
-				$select.children('option:selected').attr('data-selected',1);
+				//$select.children('option:selected').attr('data-selected',1);
 				$select.on('change', function(){
 					var $this=$(this),
 						$label=$this.siblings('label'),
 						$selected=$this.children('option:selected');
 					$label.text($selected.text());
-					if ($selected.attr('data-selected')!=1) {
+					//if ($selected.attr('data-selected')!=1) {
 						$label.addClass('chk');
-					} else {
-						$label.removeClass('chk');
-					}
+					//} else {
+					//	$label.removeClass('chk');
+					//}
 				});
 			});
 		},
@@ -223,16 +234,19 @@
 				var	o=options,
 					$this=$(this),
 					$tabMenu=$this.find('.'+o.tabMenu),
-					$tabButton=$tabMenu.find('button'),
+					$tabBtn=$tabMenu.find('button'),
 					$tabCont=$this.find('.'+o.tabCont).find('.tabCnt');
-				$tabButton.on('click', function(e) {
-					var index=$tabButton.index($(this));
+				$tabBtn.on('click', function(e) {
+					var index=$tabBtn.index($(this)),
+						onIndex=$tabMenu.find('li').index($tabMenu.find('li.on'));
+						//console.log(onIndex);
 					if (!$(this).parent().hasClass('on')) {
 						$tabMenu.find('.on').removeClass('on');
-						$tabCont.hide();
 						$(this).parent().addClass('on');
 						$tabCont.eq(index).show();
+						$tabCont.eq(onIndex).hide();
 					}
+					e.preventDefault();
 				});
 			});	
 		},
@@ -245,16 +259,44 @@
 			return this.each(function() {
 				var	o=options,
 					$this=$(this),
-					$tabButton=$(this).find('.'+o.tabBtn),
+					$tabBtn=$(this).find('.'+o.tabBtn),
 					$tabCont=$this.find('.'+o.tabCont);
-				$tabButton.on('click', function(e) {
-					var index=$tabButton.index($(this));
+				$tabBtn.on('click', function(e) {
+					var index=$tabBtn.index($(this));
 					if (!$(this).parent().hasClass('on')) {
 						$this.find('.on').removeClass('on');
 						$tabCont.hide();
 						$(this).parent().addClass('on');
 						$tabCont.eq(index).show();
 					}
+				});
+			});	
+		},
+		tab_P: function(options) { // 인재검색 탭+레이어 조건
+			var defaults={
+					tabBtn : 'devTplLyBtn_P',
+					tabCloseBtn : 'devLyBtnClose_P',
+					tabCont : 'devLyType_P'
+				},
+				options=$.extend(defaults, options);
+			return this.each(function() {
+				var	o=options,
+					$this=$(this),
+					$tabBtn=$this.find('.'+o.tabBtn);
+					$tabCloseBtn=$this.find('.'+o.tabCloseBtn);
+				$tabBtn.on('click', function(e) {
+					var index=$tabBtn.index($(this)),
+						$liOn=$this.find('li.on'),
+						onIndex=$tabBtn.parents('li').index($liOn);
+					//console.log(index+', '+onIndex);
+					$(this).parents('li').addClass('on').find('.'+o.tabCont).show();
+					$liOn.removeClass('on').find('.'+o.tabCont).hide();
+					e.preventDefault();
+				});
+				$tabCloseBtn.on('click', function(e) {
+					var $liOn=$this.find('li.on');
+					$liOn.removeClass('on').find('.'+o.tabCont).hide();
+					e.preventDefault();
 				});
 			});	
 		},
@@ -384,4 +426,15 @@ $(function(){
 	$('.devTplLyHover').tooltipBox({type : 'hover'});
 	$('.devTplLyHover_1').tooltipBox({type : 'hover_2'});
 	$('.devTplLyClick_1').tooltipBox({type : 'click_2'});
+
+	/* 인재검색 영역 */
+	$('.devTplLyClick_etc').tooltipBox({lyBtn : 'devTplLyBtn_etc', layer : 'devLyType_etc', btnClose : 'devLyBtnClose_etc'});
+	$('.devTplLyClick_etc .devTplLyBtn_etc').on('click', function() {
+		$('.devTplLyClick_etc.on').removeClass('on').find('.devLyType_etc').hide();
+		$(this).parent().addClass('on');
+	})
+
+	 // $('.devTplChkBx').on('jk.change', function(e, data) {
+	 // 	console.log(data);
+	 // });
 });
