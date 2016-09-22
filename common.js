@@ -153,7 +153,7 @@
 				});
 			});
 		},
-		placeholder: function(options) {
+		JKplaceholder: function(options) {
 			var defaults={
 					txtClass : 'ph'
 				},
@@ -167,6 +167,10 @@
 					$type=$this.find('input[type="text"]');
 				} else if ($this.find('textarea').length) {
 					$type=$this.find('textarea');
+				}
+				//console.log($type.attr('id')+', '+$type.val());
+				if ($.trim($type.val())!="") {
+					$txtClass.hide();
 				}
 				$type.on('focus', function(e) {
 					$txtClass.hide();
@@ -227,7 +231,8 @@
 		tab_1: function(options) {
 			var defaults={
 					tabMenu : 'tplTabBx',
-					tabCont : 'tplTabCnt'
+					tabContWrap : 'tplTabCnt',
+					tabCont : 'tabCnt'
 				},
 				options=$.extend(defaults, options);
 			return this.each(function() {
@@ -235,7 +240,7 @@
 					$this=$(this),
 					$tabMenu=$this.find('.'+o.tabMenu),
 					$tabBtn=$tabMenu.find('button'),
-					$tabCont=$this.find('.'+o.tabCont).find('.tabCnt');
+					$tabCont=$this.find('.'+o.tabContWrap).find('.'+o.tabCont);
 				$tabBtn.on('click', function(e) {
 					var index=$tabBtn.index($(this)),
 						onIndex=$tabMenu.find('li').index($tabMenu.find('li.on'));
@@ -319,38 +324,45 @@
 					$this=$(this),
 					$lyBtn=$this.find('.'+o.lyBtn),
 					$layer=$this.find('.'+o.layer);
-				//console.log($layer);
-				switch(o.type) {
-					case 'click':
-						$lyBtn.on('click', function(e) {
-							if ($layer.is(':visible')) {
-								$layer.hide();
-							} else {
-								$layer.show();
-							}
-						});
-						break;
-					case 'click_2':
-						$lyBtn.on('click', function(e) {
-							$layer.show();
-						});
-						break;
-					case 'hover':
-						$lyBtn.on('mouseenter', function(e) {
-							$layer.show();
-						});
-						$lyBtn.on('mouseleave', function(e) {
-							$layer.hide();
-						});
-						break;
-					case 'hover_2':
-						$lyBtn.on('mouseenter', function(e) {
-							$layer.show();
-						});
-						break;
-				}
-				$layer.find('.'+o.btnClose).on('click', function(e) {
-					$layer.hide();
+				$lyBtn.each(function() { 
+					var $thisLyBtn=$(this),
+						$thisLayer=$layer;
+					if ($thisLyBtn.data('layerclass')!=undefined) {
+						$thisLayer=$this.find('.'+$thisLyBtn.data('layerclass'));
+					}
+					//console.log($thisLayer);
+					switch(o.type) {
+						case 'click':
+							$thisLyBtn.on('click', function(e) {
+								if ($thisLayer.is(':visible')) {
+									$thisLayer.hide();
+								} else {
+									$thisLayer.show();
+								}
+							});
+							break;
+						case 'click_2':
+							$thisLyBtn.on('click', function(e) {
+								$thisLayer.show();
+							});
+							break;
+						case 'hover':
+							$thisLyBtn.on('mouseenter', function(e) {
+								$thisLayer.show();
+							});
+							$thisLyBtn.on('mouseleave', function(e) {
+								$thisLayer.hide();
+							});
+							break;
+						case 'hover_2':
+							$thisLyBtn.on('mouseenter', function(e) {
+								$thisLayer.show();
+							});
+							break;
+					}
+					$thisLayer.find('.'+o.btnClose).on('click', function(e) {
+						$thisLayer.hide();
+					});
 				});
 			});
 		}
@@ -413,7 +425,7 @@ $(function(){
 	/* Form */
 	$('.devTplChkBx').checkbox();
 	$('.devTplSltBx').select();
-	$('.devTplSchPh').placeholder();
+	$('.devTplSchPh').JKplaceholder();
 
 	/* tab */
 	$('.devTplTabBx').tab_1();
@@ -426,6 +438,7 @@ $(function(){
 	$('.devTplLyHover').tooltipBox({type : 'hover'});
 	$('.devTplLyHover_1').tooltipBox({type : 'hover_2'});
 	$('.devTplLyClick_1').tooltipBox({type : 'click_2'});
+	$('.devTplLyClickA').tooltipBox({lyBtn : 'devTplLyBtnA', layer : 'devLyTypeA', btnClose : 'devLyBtnCloseA'}); // 지하철 노선도 (한영역에 레이어가 2개인 경우)
 
 	/* 인재검색 영역 */
 	$('.devTplLyClick_etc').tooltipBox({lyBtn : 'devTplLyBtn_etc', layer : 'devLyType_etc', btnClose : 'devLyBtnClose_etc'});
