@@ -6,6 +6,16 @@ window.log = function(){
   }
 };
 
+/* find dom fn(not use jquery) */
+var $=function(elem) {
+	var dom=document.querySelectorAll(elem),
+		rtnVal=null;
+	if (dom.length==0) rtnVal=undefined;
+	if (dom.length==1) rtnVal=dom[0];
+	if (dom.length>1) rtnVal=dom;
+	return rtnVal; 
+};
+
 function preloadImg() {
 	var imgs=[];
 
