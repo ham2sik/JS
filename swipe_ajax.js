@@ -40,6 +40,7 @@ var swiper = new Swiper($this, {
 		} else if ((swiperPrevIndex > swiperActiveIndex)&&($slideActivePrev.getAttribute('data-check')==null)) { // swipe prev
 			urlNum=(swiperActiveIndex-1)%slideLength;
 			if (swiperActiveIndex==(slideLength-1)) {  // 별도조건
+				$slideActivePrev.setAttribute('data-check', 1);
 				$slideActivePrev=swiper.slides[urlNum+slideLength];
 			}
 			swipeData(urlName[1], urlNum, $slideActivePrev);
