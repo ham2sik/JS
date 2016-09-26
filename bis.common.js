@@ -6,6 +6,28 @@ window.log = function(){
   }
 };
 
+var listHeightResize = function($elem) { // var $list = $('#partSearch .rstList'); listHeightResize($('#partSearch .rstList'));
+	var $li=$elem.find('li'),
+		liSize=$li.size(),
+		heightChk01,
+		heightChk02;
+	liSize--;
+	//console.log(liSize);
+	for (i=0; i<=liSize; i=i+2) {
+		if (i+1>liSize) {
+			break;
+		}
+		heightChk01=$li.eq(i).height();
+		heightChk02=$li.eq(i+1).height();
+		//console.log(i+', '+heightChk01+', '+heightChk02);
+		if (heightChk01>heightChk02) {
+			$li.eq(i+1).height(heightChk01);
+		} else {
+			$li.eq(i).height(heightChk02);
+		}
+	}
+}
+
 /* find dom fn(not use jquery) */
 var $=function(elem) {
 	var dom=document.querySelectorAll(elem),
