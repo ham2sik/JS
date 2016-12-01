@@ -1,10 +1,3 @@
-/* 
-* 모바일개발팀 UI기술파트 전용(JK 현대화) - 담당자 : 함이식 대리(사용 시 담당자 문의 후 사용)
-* File Name : /content/js/jk_uit.js
-* Final Editor : 함이식 
-* History : [2016.10.12 수정]
-*/
-
 (function($){
 	$.fn.extend({
 		byteCheck: function(options) {// plugin name
