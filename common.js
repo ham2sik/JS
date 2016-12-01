@@ -1,3 +1,10 @@
+/* 
+* 모바일개발팀 UI기술파트 전용(JK 현대화) - 담당자 : 함이식 대리(사용 시 담당자 문의 후 사용)
+* File Name : /content/js/jk_uit.js
+* Final Editor : 함이식 
+* History : [2016.10.12 수정]
+*/
+
 (function($){
 	$.fn.extend({
 		byteCheck: function(options) {// plugin name
@@ -49,32 +56,68 @@
 					$input=$this.find('input[type="checkbox"]'),
 					$img=$this.find('.'+o.imgClass),
 					onClassName=o.onClass;
-				if ($img.prop('tagName').toLowerCase()!='span') {
-					$input.on('click', function(e) {
-						var checkedValue=$input.prop('checked'),
-							inputValue=$input.val(),
-							inputName=$input.attr('name');
-						$img.toggleClass(onClassName);
-						$this.trigger('jk.change',{'name':inputName,'checked':checkedValue,'value':inputValue});
-						e.stopPropagation();
-					});
-				} else {
-					$this.on('click', function(e) {
-						var checkedValue,
-							inputValue=$input.val(),
-							inputName=$input.attr('name');
-						if ($img.hasClass(onClassName)) {
-							$img.removeClass(onClassName);
-							checkedValue=false;
-						} else {
-							$img.addClass(onClassName);
-							checkedValue=true;
-						}
-						$input.prop('checked',checkedValue);
-						$this.trigger('jk.change',{'name':inputName, 'checked':checkedValue,'value':inputValue});
-						e.stopPropagation();
+				// $input.css('opacity',1);
+				// $img.css('left', 10);
+				if ($input.is(":checked")) { // init
+					$img.addClass(onClassName);
+				}
+				$input.on('change', function(e) {
+					var checkedValue=$(this).is(":checked"),
+						inputValue=$input.val(),
+						inputName=$input.attr('name');
+					if (checkedValue) {
+						$img.addClass(onClassName);
+					} else {
+						$img.removeClass(onClassName);
+					}
+					//$input.prop('checked',checkedValue);
+					$this.trigger('jk.change',{'name':inputName, 'checked':checkedValue,'value':inputValue});
+					e.stopPropagation();
+				});
+				if ($img.prop('tagName').toLowerCase()=='span') {
+					$img.on('click', function(e) {
+						$input.trigger('click');
 					});
 				}
+			});
+		},
+		radio: function(options) {
+			var defaults={
+					imgClass : 'tplBtn',
+					onClass : 'chk'
+				},
+				options=$.extend(defaults, options);
+			return this.each(function() {
+				var o=options,
+					$this=$(this),
+					$input=$this.find('input[type="radio"]'),
+					$img=$this.find('.'+o.imgClass),
+					onClassName=o.onClass;
+				// $input.css('opacity',1);
+				// $img.css('left', 10);
+				if ($input.is(":checked")) { // init
+					$img.addClass(onClassName);
+				}
+				$input.on('change', function(e) {
+					var checkedValue=$(this).is(":checked"),
+						inputValue=$input.val(),
+						inputName=$input.attr('name');
+					if (checkedValue) {
+						$img.addClass(onClassName);
+					} else {
+						$img.removeClass(onClassName);
+					}
+					$('input[name='+inputName+']:radio').each(function() {
+						if ($(this).is(":checked")) {
+							$(this).parent().find('.'+o.imgClass).addClass(onClassName);
+						} else {
+							$(this).parent().find('.'+o.imgClass).removeClass(onClassName);
+						}
+					});
+					//$input.prop('checked',checkedValue);
+					$this.trigger('jk.change',{'name':inputName, 'checked':checkedValue,'value':inputValue});
+					e.stopPropagation();
+				});
 			});
 		},
 		chgClass: function(options) {
@@ -305,6 +348,35 @@
 				});
 			});	
 		},
+		tab_layer: function(options) {
+			var defaults={
+					tabBtn : 'devLyBtnMulti',
+					tabCloseBtn : 'devLyBtnMultiClose',
+					tabCont : 'devLyMultiType',
+					tabWrap : 'devLyMultiWrap'
+				},
+				options=$.extend(defaults, options);
+			return this.each(function() {
+				var	o=options,
+					$this=$(this),
+					$tabBtn=$this.find('.'+o.tabBtn);
+					$tabCloseBtn=$this.find('.'+o.tabCloseBtn);
+				$tabBtn.on('click', function(e) {
+					var index=$tabBtn.index($(this)),
+						$liOn=$tabBtn.parents('.on.'+o.tabWrap),
+						onIndex=$tabBtn.parents('.'+o.tabWrap).index($liOn);
+					//console.log(index+', '+onIndex);
+					$(this).parents('.'+o.tabWrap).addClass('on').find('.'+o.tabCont).show();
+					$liOn.removeClass('on').find('.'+o.tabCont).hide();
+					e.preventDefault();
+				});
+				$tabCloseBtn.on('click', function(e) {
+					var $liOn=$this.find('.on.'+o.tabWrap);
+					$liOn.removeClass('on').find('.'+o.tabCont).hide();
+					e.preventDefault();
+				});
+			});	
+		},
 		tableHeight: function(options) {
 			return this.each(function() {
 				var $this=$(this);
@@ -359,6 +431,14 @@
 								$thisLayer.show();
 							});
 							break;
+						case 'hover_3':
+							$this.on('mouseenter', function(e) {
+								$thisLayer.show();
+							});
+							$this.on('mouseleave', function(e) {
+								$thisLayer.hide();
+							});
+							break;
 					}
 					$thisLayer.find('.'+o.btnClose).on('click', function(e) {
 						$thisLayer.hide();
@@ -367,6 +447,41 @@
 			});
 		}
 	});
+
+	/* common fn */
+	$(function(){
+		/* Form */
+		$('.devTplChkBx').checkbox();
+		$('.devTplSltBx').select();
+		$('.devTplSchPh').JKplaceholder();
+		$('.devTplRadio').radio();
+
+		/* tab */
+		$('.devTplTabBx').tab_1();
+
+		/* table div height */
+		$('.tplTbWrap').tableHeight();
+
+		/* layer */
+		$('.devTplLyClick').tooltipBox();
+		$('.devTplLyHover').tooltipBox({type : 'hover'});
+		$('.devTplLyHover_1').tooltipBox({type : 'hover_2'});
+		$('.devTplLyHover_2').tooltipBox({type : 'hover_3'});
+		$('.devTplLyClick_1').tooltipBox({type : 'click_2'});
+		$('.devTplLyClickA').tooltipBox({lyBtn : 'devTplLyBtnA', layer : 'devLyTypeA', btnClose : 'devLyBtnCloseA'}); // 지하철 노선도 (한영역에 레이어가 2개인 경우)
+
+		/* 인재검색 영역 */
+		$('.devTplLyClick_etc').tooltipBox({lyBtn : 'devTplLyBtn_etc', layer : 'devLyType_etc', btnClose : 'devLyBtnClose_etc'});
+		$('.devTplLyClick_etc .devTplLyBtn_etc').on('click', function() {
+			$('.devTplLyClick_etc.on').removeClass('on').find('.devLyType_etc').hide();
+			$(this).parent().addClass('on');
+		})
+
+		// $('.devTplChkBx').on('jk.change', function(e, data) {
+		// 	console.log(data);
+		// });
+	});
+
 })(jQuery);
 
 /* range fn */
@@ -420,34 +535,12 @@ var range = function(start, end, step) {
 
 }
 
-/* common fn */
-$(function(){
-	/* Form */
-	$('.devTplChkBx').checkbox();
-	$('.devTplSltBx').select();
-	$('.devTplSchPh').JKplaceholder();
-
-	/* tab */
-	$('.devTplTabBx').tab_1();
-
-	/* table div height */
-	$('.tplTbWrap').tableHeight();
-
-	/* layer */
-	$('.devTplLyClick').tooltipBox();
-	$('.devTplLyHover').tooltipBox({type : 'hover'});
-	$('.devTplLyHover_1').tooltipBox({type : 'hover_2'});
-	$('.devTplLyClick_1').tooltipBox({type : 'click_2'});
-	$('.devTplLyClickA').tooltipBox({lyBtn : 'devTplLyBtnA', layer : 'devLyTypeA', btnClose : 'devLyBtnCloseA'}); // 지하철 노선도 (한영역에 레이어가 2개인 경우)
-
-	/* 인재검색 영역 */
-	$('.devTplLyClick_etc').tooltipBox({lyBtn : 'devTplLyBtn_etc', layer : 'devLyType_etc', btnClose : 'devLyBtnClose_etc'});
-	$('.devTplLyClick_etc .devTplLyBtn_etc').on('click', function() {
-		$('.devTplLyClick_etc.on').removeClass('on').find('.devLyType_etc').hide();
-		$(this).parent().addClass('on');
-	})
-
-	 // $('.devTplChkBx').on('jk.change', function(e, data) {
-	 // 	console.log(data);
-	 // });
-});
+/* make same height fn */
+function makeSameHeight(parentPath) {
+	var heightArr=[],
+		$childrenPath=parentPath.children();
+	$childrenPath.each(function(i){
+		heightArr[i]=$(this).innerHeight();
+	});
+	$childrenPath.css('height', Math.max.apply(null, heightArr));
+}
