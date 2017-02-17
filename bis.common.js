@@ -6,6 +6,34 @@ window.log = function(){
   }
 };
 
+/* line-clamp */
+function fontChk(el) {
+	var $el=$(el);
+
+	$el.find('.line2Wrap').each(function() {
+		var $wrap=$(this),
+			wrapHeight=$wrap.height(),
+			$target=$wrap.children('.listTxtWrap'),
+			targetHeight=$target.height(),
+			$txt=$target.children('.listTxt02'),
+			txtVal=$txt.html();
+
+		if (!$wrap.hasClass('done')) {
+			if (targetHeight > wrapHeight) {
+				while (targetHeight > wrapHeight) {
+					txtVal=txtVal.substr(0, txtVal.length-1);
+					$txt.html(txtVal+'...');
+					targetHeight=$target.height();
+					console.log(txtVal+' , '+targetHeight+' , '+wrapHeight);
+				}
+				$wrap.addClass('done');
+			} else {
+				$wrap.addClass('done');
+			}
+		}
+	});
+}
+
 /* parameter fn - ex)QueryString.listNo */
 var QueryString = function () {
 	var query_string = {},
