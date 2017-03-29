@@ -5,6 +5,18 @@ window.log = function(){
     console.log( Array.prototype.slice.call(arguments) );
   }
 };
+/* random list */
+var randomList = []; 
+var randomNum;
+var listSize=10;
+while(randomList.length < listSize){
+	randomNum = Math.floor(Math.random()*Number(listSize));console.log('randomNum:'+randomNum+', index:'+randomList.indexOf(randomNum));
+	if(randomList.indexOf(randomNum) < 0){
+		randomList.push(randomNum);
+	}
+	console.log('loop', ++loopCount);
+}
+console.log(randomList);
 
 /* line-clamp */
 function fontChk(el) {
