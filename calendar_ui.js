@@ -59,7 +59,7 @@ var jobCal = function(options) {
 
 
 	var init=function() {
-		$('.notiTxt, .starTotalNav, #ban, .actPrevTop, footer').hide(); // footer hide
+		$('.notiTxt, .bbsBann, .starTotalNav, #ban, .actPrevTop, footer').hide(); // footer hide
 		// url check, on class add
 		if (queryString.Sel_Date===undefined) {
 			onPathId='link'+o.toDay;
@@ -83,7 +83,7 @@ var jobCal = function(options) {
 					if (Number($(this).attr('id').substr(4,6))>=Number(limitDay)) {
 						$(this).remove();
 						$loading.addClass('done');
-						$('.notiTxt, .starTotalNav, #ban, .actPrevTop, footer').show();
+						$('.notiTxt, .bbsBann, .starTotalNav, #ban, .actPrevTop, footer').show();
 					}
 				});
 			} else if (Number(queryString.Sel_Date.substr(0,6))>=Number(limitDay)) {
@@ -428,11 +428,11 @@ var jobCal = function(options) {
 				return false;
 			}
 			isDoingClickFn==1;
+			onPathId=linkId;
 			loadList(o.toDay, 'today');
 			if (!((thisMonth==activeDate)||(thisMonth==nextDate)||(thisMonth==prevDate))) {
 				daySwipeCallback(linkId);
 			}
-			onPathId=linkId;
 			calDateList.slideTo($('.calDateList li').index($linkId));
 
 			//urlChange(location.href, o.toDay);
@@ -454,7 +454,7 @@ var jobCal = function(options) {
 				//alert(1);
 				if ($loading.hasClass('done')) {
 					$loading.removeClass('done');
-					$('.notiTxt, .starTotalNav, #ban, .actPrevTop, footer').hide();
+					$('.notiTxt, .bbsBann, .starTotalNav, #ban, .actPrevTop, footer').hide();
 				}
 				if ((Number(date.substr(6,2))>22)||(Number(date.substr(0,6))>=Number(limitDay))) {
 					if (!$('.dataCheckArea').length) {
@@ -467,7 +467,7 @@ var jobCal = function(options) {
 							$(this).remove();
 							//console.log('done');
 							$loading.addClass('done');
-							$('.notiTxt, .starTotalNav, #ban, .actPrevTop, footer').show();
+							$('.notiTxt, .bbsBann, .starTotalNav, #ban, .actPrevTop, footer').show();
 						}
 					});
 					data=$('.dataCheckArea').html();
