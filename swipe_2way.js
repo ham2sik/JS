@@ -160,30 +160,6 @@ function loadScript(url, callback) {
 				slidesPerView: 'auto',
 				freeMode: true
 			});
-			/* VVIP */
-			// var swiperList2wayVvip = new Swiper('.swiper-container.list2wayVvip', {
-			// 	spaceBetween: 12,
-			// 	loop: true,
-			// 	centeredSlides: true,
-			// 	slidesPerView: 'auto',
-			// 	touchRatio: 0.2,
-			// 	slideToClickedSlide: true
-			// });
-			// var swiperView2wayVvip = new Swiper('.swiper-container.view2wayVvip', {
-			// 	loop: true,
-			// 	pagination: $('.swiper-container.view2wayVvip').siblings(".countNum02"),
-			// 	slidesPerView: 'auto',
-			// 	preloadImages: false,
-			// 	lazyLoading: false,
-			// 	slideToClickedSlide:true,
-			// 	paginationType: "fraction",
-			// 	paginationFractionRender: function (swiper, currentClassName, totalClassName) {
-			// 		return '<span class="' + currentClassName + '"></span>'+'/'+'<span class="' + totalClassName + '"></span>';
-			// 	}
-			// });
-			// swiperList2wayVvip.params.control = swiperView2wayVvip;
-			// swiperView2wayVvip.params.control = swiperList2wayVvip;
-
 
 			/* vvip, 30대그룹 init */
 			var i,
@@ -374,6 +350,9 @@ function loadScript(url, callback) {
 		});
 		$("img.lazy").each(function() {
 			$(this).attr("src", $(this).data("original"));
+		});
+		$(".lazyBg").each(function() {
+			$(this).removeClass('lazyBg');
 		});
 	});
 })(jQuery);
