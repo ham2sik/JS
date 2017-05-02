@@ -6,15 +6,17 @@
 	} else if (typeof exports === 'object') {
 		module.exports = factory;
 	} else {
-		root.lazy = factory(root);
+		root.lazyUIT = factory(root);
 	}
 })(this, function (root) {
 
 	'use strict';
 
-	var lazy = {};
+	var lazyUIT = {};
 
 	var callback = function () {};
+
+	var errorSrc = 'img url on error';// errorSrc Default
 
 	var offset, poll, delay, useDebounce, unload;
 
@@ -37,14 +39,14 @@
 		}
 		clearTimeout(poll);
 		poll = setTimeout(function(){
-			lazy.render();
+			lazyUIT.render();
 			poll = null;
 		}, delay);
 	};
 
-	lazy.image = function (opts) {
+	lazyUIT.image = function (opts) {
 		opts = opts || {};
-		var offsetAll = opts.offset || 0;
+		var offsetAll = opts.offset || 0;// offset Default: 0
 		var offsetVertical = opts.offsetVertical || offsetAll;
 		var offsetHorizontal = opts.offsetHorizontal || offsetAll;
 		var optionToInt = function (opt, fallback) {
@@ -56,11 +58,12 @@
 			l: optionToInt(opts.offsetLeft, offsetHorizontal),
 			r: optionToInt(opts.offsetRight, offsetHorizontal)
 		};
-		delay = optionToInt(opts.throttle, 50);
+		delay = optionToInt(opts.throttle, 50); // throttle Default: 50
 		useDebounce = opts.debounce !== false;
 		unload = !!opts.unload;
 		callback = opts.callback || callback;
-		lazy.render();
+		errorSrc = opts.errorSrc || errorSrc;
+		lazyUIT.render();
 		if (document.addEventListener) {
 			root.addEventListener('scroll', debounceOrThrottle, false);
 			root.addEventListener('load', debounceOrThrottle, false);
@@ -70,7 +73,13 @@
 		}
 	};
 
-	lazy.render = function (context) {
+	lazyUIT.render = function (context) {
+		var imgError = function (elem) {
+			elem.onerror= function() {
+				var src = elem.getAttribute('src');
+				elem.src = errorSrc;
+			}
+		};
 		var nodes = (context || document).querySelectorAll('[data-original], [data-bg-original], .lazyBg');
 		var length = nodes.length;
 		var src, elem;
@@ -99,16 +108,16 @@
 					elem.removeAttribute('data-original');
 					elem.removeAttribute('data-bg-original');
 				}
-
 				callback(elem, 'load');
+				imgError(elem);
 			}
 		}
 		if (!length) {
-			lazy.detach();
+			lazyUIT.detach();
 		}
 	};
 
-	lazy.detach = function () {
+	lazyUIT.detach = function () {
 		if (document.removeEventListener) {
 			root.removeEventListener('scroll', debounceOrThrottle);
 		} else {
@@ -117,7 +126,7 @@
 		clearTimeout(poll);
 	};
 
-	lazy.js = function(url, callback) {
+	lazyUIT.js = function(url, callback) {
 		if (url == null) {
 			return false;
 		}
@@ -138,10 +147,8 @@
 		document.getElementsByTagName('head')[0].appendChild(scriptEle);
 	}
 
-	lazy.youTube = function(ele) {
-		if (ele == null) {
-			ele = '.lazyYoutube';
-		}
+	lazyUIT.youTube = function(ele) {
+		ele = ele || '.lazyYoutube';
 
 		var nodes = document.querySelectorAll(ele),
 			l = nodes.length, i, elem, youTubeIfr, options;
@@ -151,17 +158,26 @@
 			youTubeIfr = document.createElement('iframe');
 			options = JSON.parse(elem.getAttribute('data-options')) || {};
 
-			youTubeIfr.setAttribute('src', elem.getAttribute('data-src'));
-			youTubeIfr.setAttribute('allowfullscreen', '');
+			var srcValue=elem.getAttribute('data-src');
+			if (!(srcValue==null)&&!(srcValue=="")) {
+				youTubeIfr.setAttribute('src', elem.getAttribute('data-src'));
+				youTubeIfr.setAttribute('allowfullscreen', '');
 
-			for (var key in options) {
-				youTubeIfr.setAttribute(key, options[key]);
+				for (var key in options) {
+					youTubeIfr.setAttribute(key, options[key]);
+				}
+
+				elem.appendChild(youTubeIfr);
+				//console.log('ok:', srcValue);
 			}
-
-			elem.appendChild(youTubeIfr);
+			// else {
+			// 	console.log('error');
+			// }
 		}
 	}
 
-	return lazy;
+	return lazyUIT;
 
 });
+
+/* thx to Meraseu!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! */
