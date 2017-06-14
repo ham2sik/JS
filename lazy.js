@@ -1,13 +1,25 @@
 (function (root, factory) {
-	if (typeof define === 'function' && define.amd) {
-		define(function() {
-			return factory(root);
-		});
-	} else if (typeof exports === 'object') {
-		module.exports = factory;
-	} else {
-		root.lazyUIT = factory(root);
-	}
+	// if (typeof define === 'function' && define.amd) {
+	// 	define(function() {
+	// 		return factory(root);
+	// 	});
+	// } else if (typeof exports === 'object') {
+	// 	module.exports = factory;
+	// } else {
+		var extend = function() {
+			var extended = {};
+			for(key in arguments) {
+				var argument = arguments[key];
+				for (prop in argument) {
+					if (Object.prototype.hasOwnProperty.call(argument, prop)) {
+						extended[prop] = argument[prop];
+					}
+				}
+			}
+			return extended;
+		};
+		root.lazyUIT = root.lazyUIT || {}, root.lazyUIT=extend(root.lazyUIT, factory(root));
+	// }
 })(this, function (root) {
 
 	'use strict';
@@ -177,7 +189,7 @@
 		ele = ele || '.lazyYoutube';
 
 		var nodes = document.querySelectorAll(ele),
-			l = nodes.length, i, elem, youTubeIfr, options;
+			l = nodes.length, i, elem, youTubeIfr, options, title;
 
 		for(i=0; i<l; i++) {
 			elem = nodes[i];
@@ -186,7 +198,9 @@
 
 			var srcValue=elem.getAttribute('data-src');
 			if (!(srcValue==null)&&!(srcValue=="")) {
+				title=elem.getAttribute('data-title') || '';
 				youTubeIfr.setAttribute('src', elem.getAttribute('data-src'));
+				youTubeIfr.setAttribute('title', title);
 				youTubeIfr.setAttribute('frameborder', '0');
 				youTubeIfr.setAttribute('allowfullscreen', '');
 
@@ -197,6 +211,7 @@
 				elem.appendChild(youTubeIfr);
 				//console.log('ok:', srcValue);
 				elem.removeAttribute('data-src');
+				elem.removeAttribute('data-title');
 				elem.removeAttribute('data-options');
 			}
 			// else {
@@ -208,7 +223,7 @@
 	lazyUIT.init = function() {
 		if (!window.Promise) {
 			//console.log('lazyUIT: promise not support');
-			lazyUIT.js("Promise polyfill js url");
+			lazyUIT.js("http://i.jobkorea.kr/content/js/es6-promise.min.js");
 		}
 	}
 	lazyUIT.init();
