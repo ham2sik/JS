@@ -1,11 +1,11 @@
 (function (root, factory) {
-	// if (typeof define === 'function' && define.amd) {
-	// 	define(function() {
-	// 		return factory(root);
-	// 	});
-	// } else if (typeof exports === 'object') {
-	// 	module.exports = factory;
-	// } else {
+	if (typeof define === 'function' && define.amd) {
+		define(function() {
+			return factory(root);
+		});
+	} else if (typeof exports === 'object') {
+		module.exports = factory;
+	} else {
 		var extend = function() {
 			var extended = {};
 			for(key in arguments) {
@@ -19,7 +19,7 @@
 			return extended;
 		};
 		root.lazyUIT = root.lazyUIT || {}, root.lazyUIT=extend(root.lazyUIT, factory(root));
-	// }
+	}
 })(this, function (root) {
 
 	'use strict';
